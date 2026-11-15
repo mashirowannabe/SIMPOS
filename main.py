@@ -4,15 +4,15 @@ from services import inventory, master_data, production, reports
 
 
 def pause():
-    input("\nTekan Enter untuk kembali ke menu...")
+    input("\\nTekan Enter untuk kembali ke menu...")
 
 
-def read_int(prompt):
+def read_int(prompt, minimum=1):
     while True:
         try:
             value = int(input(prompt))
-            if value <= 0:
-                print("Masukkan angka lebih dari nol.")
+            if value < minimum:
+                print(f"Masukkan angka minimal {minimum}.")
                 continue
             return value
         except ValueError:
@@ -40,8 +40,8 @@ def show_rows(rows):
 
 
 def supplier_menu():
-    print("\n--- DATA PEMASOK ---")
-    print("1. Lihat pemasok\n2. Tambah pemasok\n3. Ubah pemasok\n4. Hapus pemasok")
+    print("\\n--- DATA PEMASOK ---")
+    print("1. Lihat pemasok\\n2. Tambah pemasok\\n3. Ubah pemasok\\n4. Hapus pemasok")
     choice = input("Pilih: ").strip()
     if choice == "1":
         show_rows(master_data.list_suppliers())
@@ -64,8 +64,8 @@ def supplier_menu():
 
 
 def material_menu():
-    print("\n--- DATA BAHAN BAKU ---")
-    print("1. Lihat bahan\n2. Tambah bahan\n3. Ubah bahan\n4. Hapus bahan")
+    print("\\n--- DATA BAHAN BAKU ---")
+    print("1. Lihat bahan\\n2. Tambah bahan\\n3. Ubah bahan\\n4. Hapus bahan")
     choice = input("Pilih: ").strip()
     if choice == "1":
         show_rows(master_data.list_materials())
@@ -89,21 +89,18 @@ def choose_items(prompt):
     items = []
     print(prompt)
     while True:
-        material_id = read_int("ID bahan (0 untuk selesai): ") if not items else None
+        material_id = read_int("ID bahan (0 untuk selesai): ", minimum=0)
         if material_id == 0:
             break
-        if material_id is None:
-            raw = input("Tambah bahan lagi? (y/t): ").strip().lower()
-            if raw != "y":
-                break
-            material_id = read_int("ID bahan: ")
         quantity = read_float("Jumlah: ")
         items.append((material_id, quantity))
+        if input("Tambah bahan lagi? (y/t): ").strip().lower() != "y":
+            break
     return items
 
 
 def receipt_menu():
-    print("\n--- PENERIMAAN BAHAN ---")
+    print("\\n--- PENERIMAAN BAHAN ---")
     show_rows(master_data.list_suppliers())
     supplier_id = read_int("ID pemasok: ")
     show_rows(master_data.list_materials())
@@ -114,7 +111,7 @@ def receipt_menu():
 
 
 def production_menu():
-    print("\n--- PRODUKSI ---")
+    print("\\n--- PRODUKSI ---")
     show_rows(master_data.list_materials())
     items = choose_items("Masukkan bahan yang digunakan untuk batch.")
     notes = input("Catatan batch (opsional): ").strip()
@@ -125,7 +122,7 @@ def production_menu():
 def batch_status_menu():
     show_rows(production.list_batches())
     batch_id = read_int("ID batch: ")
-    print("1. Persiapan\n2. Fermentasi\n3. Pematangan\n4. Selesai")
+    print("1. Persiapan\\n2. Fermentasi\\n3. Pematangan\\n4. Selesai")
     statuses = {"1": "Persiapan", "2": "Fermentasi", "3": "Pematangan", "4": "Selesai"}
     status = statuses.get(input("Pilih status: ").strip())
     if not status:
@@ -158,15 +155,15 @@ def quality_menu():
 
 
 def report_menu():
-    print("\n--- LAPORAN STOK ---")
+    print("\\n--- LAPORAN STOK ---")
     show_rows(reports.stock_report())
-    print("\n--- LAPORAN PRODUKSI ---")
+    print("\\n--- LAPORAN PRODUKSI ---")
     show_rows([reports.production_report()])
 
 
 def main():
     while True:
-        print("\n========================================")
+        print("\\n========================================")
         print(" SIMPOS - MANAJEMEN PRODUKSI PUPUK KOMPOS")
         print("========================================")
         print("1. Manajemen pemasok")
@@ -194,7 +191,7 @@ def main():
                 break
             else: print("Pilihan tidak tersedia.")
         except Exception as exc:
-            print(f"\nTerjadi kesalahan: {exc}")
+            print(f"\\nTerjadi kesalahan: {exc}")
         if choice != "0":
             pause()
 
