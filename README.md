@@ -1,16 +1,20 @@
 # SIMPOS
-**Sistem Informasi Manajemen Produksi Pupuk Kompos dari Limbah Pertanian**
+**Sistem Informasi Manajemen Produksi Kompos**
 
-Aplikasi CLI sederhana menggunakan **Python** dan **PostgreSQL** untuk mencatat pemasok, bahan baku, penerimaan bahan, batch produksi, hasil kompos, dan pengujian kualitas.
+SIMPOS merupakan aplikasi berbasis Python dan PostgreSQL yang digunakan untuk membantu pengelolaan persediaan bahan baku dan proses produksi kompos.
 
-## Fitur
-- CRUD pemasok dan bahan baku.
-- Pencatatan penerimaan bahan baku yang memperbarui stok.
-- Pencatatan batch dan pemakaian beberapa bahan.
-- Validasi stok dan pengurangan stok secara transaksional.
-- Pencatatan hasil produksi dan perhitungan rendemen.
-- Pencatatan hasil pengujian kualitas.
-- Laporan ringkas stok dan produksi.
+Aplikasi ini memiliki dua jenis pengguna, yaitu Orang Lapangan dan Admin/Supervisor. Orang Lapangan bertugas mencatat penerimaan bahan baku, penggunaan bahan dalam produksi, hasil produksi, serta pengujian kualitas kompos. Sementara itu, Admin/Supervisor bertugas mengelola data, memverifikasi penerimaan bahan baku, dan memantau aktivitas produksi.
+
+**Fitur utama:**
+- Pengelolaan data pemasok dan bahan baku.
+- Pencatatan dan verifikasi penerimaan bahan baku.
+- Pemantauan stok bahan baku.
+- Pencatatan penggunaan bahan untuk produksi.
+- Pencatatan hasil produksi kompos.
+- Pengujian kualitas kompos.
+- Laporan persediaan dan produksi.
+
+SIMPOS dikembangkan menggunakan Python sebagai bahasa pemrograman dan PostgreSQL sebagai sistem manajemen basis data.
 
 ## Kebutuhan
 - Python 3.10+
