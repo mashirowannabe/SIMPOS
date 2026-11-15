@@ -1,27 +1,60 @@
 # SIMPOS
 **Sistem Informasi Manajemen Produksi Kompos**
 
-SIMPOS merupakan aplikasi berbasis Python dan PostgreSQL yang digunakan untuk membantu pengelolaan persediaan bahan baku dan proses produksi kompos.
+SIMPOS adalah aplikasi berbasis Python dan PostgreSQL untuk mencatat dan memantau persediaan bahan baku serta proses produksi kompos.
 
-Aplikasi ini memiliki dua jenis pengguna, yaitu Orang Lapangan dan Admin/Supervisor. Orang Lapangan bertugas mencatat penerimaan bahan baku, penggunaan bahan dalam produksi, hasil produksi, serta pengujian kualitas kompos. Sementara itu, Admin/Supervisor bertugas mengelola data, memverifikasi penerimaan bahan baku, dan memantau aktivitas produksi.
+Tujuan SIMPOS adalah membantu kegiatan produksi kompos agar data bahan baku yang masuk, bahan yang digunakan, hasil produksi, dan hasil pengujian kualitas tersimpan dengan rapi.
 
-**Fitur utama:**
-- Pengelolaan data pemasok dan bahan baku.
-- Pencatatan dan verifikasi penerimaan bahan baku.
+## Pengguna Sistem
+
+SIMPOS dirancang untuk memiliki dua jenis pengguna:
+
+1. **Orang Lapangan**  
+   Mencatat kegiatan yang dilakukan di lapangan, seperti penerimaan bahan baku, penggunaan bahan untuk produksi, hasil produksi, dan pengujian kualitas kompos.
+
+2. **Admin/Supervisor**  
+   Mengelola data pemasok dan bahan baku, memeriksa serta menyetujui penerimaan bahan baku, memantau kegiatan produksi, dan melihat laporan.
+
+Pembagian peran ini merupakan rancangan hak akses sistem. Implementasi pemilihan peran dan pembatasan menu masih perlu diselesaikan pada tahap pengembangan berikutnya.
+
+## Fitur Utama
+
+- Pengelolaan data pemasok.
+- Pengelolaan data bahan baku.
+- Pencatatan penerimaan bahan baku.
+- Verifikasi penerimaan bahan baku oleh Admin/Supervisor.
 - Pemantauan stok bahan baku.
 - Pencatatan penggunaan bahan untuk produksi.
-- Pencatatan hasil produksi kompos.
-- Pengujian kualitas kompos.
+- Pencatatan batch dan hasil produksi kompos.
+- Perhitungan rendemen produksi.
+- Pencatatan hasil pengujian kualitas kompos.
 - Laporan persediaan dan produksi.
 
-SIMPOS dikembangkan menggunakan Python sebagai bahasa pemrograman dan PostgreSQL sebagai sistem manajemen basis data.
+## Alur Kerja Singkat
+
+1. Orang Lapangan mencatat bahan baku yang diterima.
+2. Admin/Supervisor memeriksa data penerimaan.
+3. Setelah disetujui, jumlah bahan ditambahkan ke stok.
+4. Orang Lapangan mencatat bahan yang digunakan dalam batch produksi.
+5. Sistem memeriksa ketersediaan dan mengurangi stok sesuai pemakaian.
+6. Orang Lapangan mencatat hasil produksi kompos.
+7. Orang Lapangan mencatat hasil pengujian kualitas.
+8. Admin/Supervisor memantau data dan laporan.
+
+## Teknologi
+
+- **Python** sebagai bahasa pemrograman.
+- **PostgreSQL** sebagai sistem manajemen basis data.
+- **Command Line Interface (CLI)** sebagai antarmuka aplikasi.
 
 ## Kebutuhan
+
 - Python 3.10+
 - PostgreSQL 14+
 - Paket Python pada `requirements.txt`
 
-## Menjalankan aplikasi
+## Menjalankan Aplikasi
+
 1. Buat database PostgreSQL, misalnya `simpos_db`.
 2. Salin `.env.example` menjadi `.env`, lalu sesuaikan kredensial database.
 3. Buat dan aktifkan virtual environment.
@@ -29,9 +62,10 @@ SIMPOS dikembangkan menggunakan Python sebagai bahasa pemrograman dan PostgreSQL
 5. Buat tabel: `python init_db.py`.
 6. Jalankan aplikasi: `python main.py`.
 
-Aplikasi juga mencoba memuat file `.env` secara otomatis jika tersedia.
+Aplikasi mencoba memuat file `.env` secara otomatis jika tersedia.
 
-## Struktur proyek
+## Struktur Proyek
+
 ```
 SIMPOS/
 ├── database/
@@ -49,5 +83,12 @@ SIMPOS/
 └── requirements.txt
 ```
 
-## Catatan ruang lingkup
-SIMPOS adalah proyek pembelajaran Algoritma 1. Pengujian kualitas dicatat berdasarkan input manual pengguna; aplikasi tidak mengukur kualitas menggunakan sensor atau alat laboratorium. Aplikasi belum mencakup penjualan, pembayaran, maupun distribusi produk.
+## Ruang Lingkup
+
+SIMPOS berfokus pada pencatatan persediaan bahan baku dan proses produksi kompos. Sistem tidak mencakup penjualan, pembayaran, distribusi produk, maupun integrasi dengan layanan eksternal.
+
+Pengujian kualitas dicatat berdasarkan input manual pengguna. Aplikasi tidak melakukan pengukuran menggunakan sensor atau alat laboratorium.
+
+## Catatan Pengembangan
+
+Rancangan sistem menggunakan dua peran, yaitu Orang Lapangan dan Admin/Supervisor. Beberapa bagian rancangan, seperti pemilihan peran, verifikasi penerimaan sebelum stok bertambah, dan penyederhanaan status produksi, masih perlu diselaraskan dengan implementasi program.
