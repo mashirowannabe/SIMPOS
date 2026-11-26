@@ -1,6 +1,7 @@
-"""Aplikasi CLI SIMPOS."""
+"""Aplikasi CLI SIMPOS dengan autentikasi dan pembatasan role."""
+from getpass import getpass
 
-from services import inventory, master_data, production, reports
+from services import auth, inventory, master_data, production, reports
 
 
 def pause():
@@ -107,11 +108,29 @@ def receipt_menu():
     items = choose_items("Masukkan bahan yang diterima.")
     notes = input("Catatan (opsional): ").strip()
     receipt_id = inventory.receive_materials(supplier_id, items, notes)
-    print(f"Penerimaan berhasil disimpan. ID: {receipt_id}")
+    print(f"Penerimaan ID {receipt_id} tersimpan dengan status Menunggu. Stok belum bertambah.")
+
+
+def review_receipt_menu():
+    print("\\n--- VERIFIKASI PENERIMAAN ---")
+    show_rows(inventory.list_receipts())
+    receipt_id = read_int("ID penerimaan yang diperiksa: ")
+    print("1. Setujui\\n2. Tolak")
+    choice = input("Pilih keputusan: ").strip()
+    if choice not in ("1", "2"):
+        print("Pilihan tidak valid.")
+        return
+    decision = "Disetujui" if choice == "1" else "Ditolak"
+    notes = input("Catatan verifikasi (opsional): ").strip()
+    inventory.review_receipt(receipt_id, decision, notes)
+    if decision == "Disetujui":
+        print("Penerimaan disetujui. Stok bahan baku sudah ditambahkan.")
+    else:
+        print("Penerimaan ditolak. Stok tidak berubah.")
 
 
 def production_menu():
-    print("\\n--- PRODUKSI ---")
+    print("\\n--- BUAT BATCH PRODUKSI ---")
     show_rows(master_data.list_materials())
     items = choose_items("Masukkan bahan yang digunakan untuk batch.")
     notes = input("Catatan batch (opsional): ").strip()
@@ -120,10 +139,11 @@ def production_menu():
 
 
 def batch_status_menu():
+    print("\\n--- PERBARUI STATUS BATCH ---")
     show_rows(production.list_batches())
     batch_id = read_int("ID batch: ")
-    print("1. Persiapan\\n2. Fermentasi\\n3. Pematangan\\n4. Selesai")
-    statuses = {"1": "Persiapan", "2": "Fermentasi", "3": "Pematangan", "4": "Selesai"}
+    print("1. Persiapan\\n2. Proses Produksi\\n3. Selesai")
+    statuses = {"1": "Persiapan", "2": "Proses Produksi", "3": "Selesai"}
     status = statuses.get(input("Pilih status: ").strip())
     if not status:
         print("Pilihan status tidak valid.")
@@ -132,6 +152,7 @@ def batch_status_menu():
 
 
 def product_menu():
+    print("\\n--- CATAT HASIL PRODUKSI ---")
     show_rows(production.list_batches())
     batch_id = read_int("ID batch yang sudah selesai: ")
     weight = read_float("Berat kompos yang dihasilkan (kg): ")
@@ -140,6 +161,7 @@ def product_menu():
 
 
 def quality_menu():
+    print("\\n--- PENGUJIAN KUALITAS ---")
     show_rows(production.list_products())
     product_id = read_int("ID produk: ")
     ph_text = input("pH (kosongkan jika tidak diuji): ").strip()
@@ -161,39 +183,121 @@ def report_menu():
     show_rows([reports.production_report()])
 
 
-def main():
+def user_menu(current_user):
+    print("\\n--- MANAJEMEN PENGGUNA ---")
+    show_rows(auth.list_users())
+    print("1. Tambah akun Orang Lapangan\\n2. Aktifkan/nonaktifkan akun")
+    choice = input("Pilih: ").strip()
+    if choice == "1":
+        name = input("Nama pengguna: ").strip()
+        username = input("Username: ").strip()
+        password = getpass("Password awal (minimal 8 karakter): ")
+        user_id = auth.create_user(name, username, password, "Orang Lapangan")
+        print(f"Akun Orang Lapangan berhasil dibuat. ID: {user_id}")
+    elif choice == "2":
+        user_id = read_int("ID pengguna: ")
+        active = input("Aktifkan akun? (y/t): ").strip().lower() == "y"
+        if auth.set_user_status(user_id, active, current_user["id_pengguna"]):
+            print("Status akun diperbarui.")
+        else:
+            print("Pengguna tidak ditemukan.")
+
+
+def login():
+    print("========================================")
+    print("       SIMPOS - LOGIN PENGGUNA")
+    print("========================================")
+    for attempt in range(3):
+        username = input("Username: ").strip()
+        password = getpass("Password: ")
+        user = auth.authenticate(username, password)
+        if user:
+            return user
+        print(f"Username/password salah atau akun nonaktif. Sisa percobaan: {2 - attempt}")
+    return None
+
+
+def admin_menu(user):
     while True:
         print("\\n========================================")
-        print(" SIMPOS - MANAJEMEN PRODUKSI PUPUK KOMPOS")
+        print(" SIMPOS | MENU ADMIN/SUPERVISOR")
+        print(f" Login: {user['nama_pengguna']}")
         print("========================================")
         print("1. Manajemen pemasok")
         print("2. Manajemen bahan baku")
-        print("3. Penerimaan bahan baku")
-        print("4. Buat batch produksi")
-        print("5. Ubah status batch")
-        print("6. Catat hasil produksi")
-        print("7. Pengujian kualitas")
-        print("8. Laporan dan statistik")
-        print("0. Keluar")
-
+        print("3. Verifikasi penerimaan bahan")
+        print("4. Monitoring stok dan produksi")
+        print("5. Manajemen pengguna")
+        print("0. Logout")
         choice = input("Pilih menu: ").strip()
         try:
             if choice == "1": supplier_menu()
             elif choice == "2": material_menu()
-            elif choice == "3": receipt_menu()
-            elif choice == "4": production_menu()
-            elif choice == "5": batch_status_menu()
-            elif choice == "6": product_menu()
-            elif choice == "7": quality_menu()
-            elif choice == "8": report_menu()
+            elif choice == "3": review_receipt_menu()
+            elif choice == "4": report_menu()
+            elif choice == "5": user_menu(user)
             elif choice == "0":
-                print("Terima kasih telah menggunakan SIMPOS.")
-                break
+                print("Logout berhasil.")
+                return
             else: print("Pilihan tidak tersedia.")
         except Exception as exc:
             print(f"\\nTerjadi kesalahan: {exc}")
         if choice != "0":
             pause()
+
+
+def field_menu(user):
+    while True:
+        print("\\n========================================")
+        print(" SIMPOS | MENU ORANG LAPANGAN")
+        print(f" Login: {user['nama_pengguna']}")
+        print("========================================")
+        print("1. Lihat stok bahan baku")
+        print("2. Catat penerimaan bahan")
+        print("3. Buat batch produksi")
+        print("4. Perbarui status batch")
+        print("5. Catat hasil produksi")
+        print("6. Input pengujian kualitas")
+        print("7. Lihat aktivitas produksi")
+        print("0. Logout")
+        choice = input("Pilih menu: ").strip()
+        try:
+            if choice == "1": show_rows(master_data.list_materials())
+            elif choice == "2": receipt_menu()
+            elif choice == "3": production_menu()
+            elif choice == "4": batch_status_menu()
+            elif choice == "5": product_menu()
+            elif choice == "6": quality_menu()
+            elif choice == "7":
+                print("--- BATCH PRODUKSI ---")
+                show_rows(production.list_batches())
+                print("--- HASIL PRODUK ---")
+                show_rows(production.list_products())
+            elif choice == "0":
+                print("Logout berhasil.")
+                return
+            else: print("Pilihan tidak tersedia.")
+        except Exception as exc:
+            print(f"\\nTerjadi kesalahan: {exc}")
+        if choice != "0":
+            pause()
+
+
+def main():
+    while True:
+        try:
+            user = login()
+        except Exception as exc:
+            print(f"Gagal mengakses database: {exc}")
+            return
+        if user is None:
+            print("Terlalu banyak percobaan login. Aplikasi ditutup.")
+            return
+        print(f"\\nSelamat datang, {user['nama_pengguna']} ({user['role']}).")
+        if user["role"] == "Admin":
+            admin_menu(user)
+        elif user["role"] == "Orang Lapangan":
+            field_menu(user)
 
 
 if __name__ == "__main__":
