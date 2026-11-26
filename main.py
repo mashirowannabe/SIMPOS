@@ -5,7 +5,7 @@ from services import auth, inventory, master_data, production, reports
 
 
 def pause():
-    input("\\nTekan Enter untuk kembali ke menu...")
+    input("\nTekan Enter untuk kembali ke menu...")
 
 
 def read_int(prompt, minimum=1):
@@ -41,8 +41,8 @@ def show_rows(rows):
 
 
 def supplier_menu():
-    print("\\n--- DATA PEMASOK ---")
-    print("1. Lihat pemasok\\n2. Tambah pemasok\\n3. Ubah pemasok\\n4. Hapus pemasok")
+    print("\n--- DATA PEMASOK ---")
+    print("1. Lihat pemasok\n2. Tambah pemasok\n3. Ubah pemasok\n4. Hapus pemasok")
     choice = input("Pilih: ").strip()
     if choice == "1":
         show_rows(master_data.list_suppliers())
@@ -65,8 +65,8 @@ def supplier_menu():
 
 
 def material_menu():
-    print("\\n--- DATA BAHAN BAKU ---")
-    print("1. Lihat bahan\\n2. Tambah bahan\\n3. Ubah bahan\\n4. Hapus bahan")
+    print("\n--- DATA BAHAN BAKU ---")
+    print("1. Lihat bahan\n2. Tambah bahan\n3. Ubah bahan\n4. Hapus bahan")
     choice = input("Pilih: ").strip()
     if choice == "1":
         show_rows(master_data.list_materials())
@@ -101,7 +101,7 @@ def choose_items(prompt):
 
 
 def receipt_menu():
-    print("\\n--- PENERIMAAN BAHAN ---")
+    print("\n--- PENERIMAAN BAHAN ---")
     show_rows(master_data.list_suppliers())
     supplier_id = read_int("ID pemasok: ")
     show_rows(master_data.list_materials())
@@ -112,10 +112,10 @@ def receipt_menu():
 
 
 def review_receipt_menu():
-    print("\\n--- VERIFIKASI PENERIMAAN ---")
+    print("\n--- VERIFIKASI PENERIMAAN ---")
     show_rows(inventory.list_receipts())
     receipt_id = read_int("ID penerimaan yang diperiksa: ")
-    print("1. Setujui\\n2. Tolak")
+    print("1. Setujui\n2. Tolak")
     choice = input("Pilih keputusan: ").strip()
     if choice not in ("1", "2"):
         print("Pilihan tidak valid.")
@@ -130,7 +130,7 @@ def review_receipt_menu():
 
 
 def production_menu():
-    print("\\n--- BUAT BATCH PRODUKSI ---")
+    print("\n--- BUAT BATCH PRODUKSI ---")
     show_rows(master_data.list_materials())
     items = choose_items("Masukkan bahan yang digunakan untuk batch.")
     notes = input("Catatan batch (opsional): ").strip()
@@ -139,10 +139,10 @@ def production_menu():
 
 
 def batch_status_menu():
-    print("\\n--- PERBARUI STATUS BATCH ---")
+    print("\n--- PERBARUI STATUS BATCH ---")
     show_rows(production.list_batches())
     batch_id = read_int("ID batch: ")
-    print("1. Persiapan\\n2. Proses Produksi\\n3. Selesai")
+    print("1. Persiapan\n2. Proses Produksi\n3. Selesai")
     statuses = {"1": "Persiapan", "2": "Proses Produksi", "3": "Selesai"}
     status = statuses.get(input("Pilih status: ").strip())
     if not status:
@@ -152,7 +152,7 @@ def batch_status_menu():
 
 
 def product_menu():
-    print("\\n--- CATAT HASIL PRODUKSI ---")
+    print("\n--- CATAT HASIL PRODUKSI ---")
     show_rows(production.list_batches())
     batch_id = read_int("ID batch yang sudah selesai: ")
     weight = read_float("Berat kompos yang dihasilkan (kg): ")
@@ -161,7 +161,7 @@ def product_menu():
 
 
 def quality_menu():
-    print("\\n--- PENGUJIAN KUALITAS ---")
+    print("\n--- PENGUJIAN KUALITAS ---")
     show_rows(production.list_products())
     product_id = read_int("ID produk: ")
     ph_text = input("pH (kosongkan jika tidak diuji): ").strip()
@@ -177,16 +177,16 @@ def quality_menu():
 
 
 def report_menu():
-    print("\\n--- LAPORAN STOK ---")
+    print("\n--- LAPORAN STOK ---")
     show_rows(reports.stock_report())
-    print("\\n--- LAPORAN PRODUKSI ---")
+    print("\n--- LAPORAN PRODUKSI ---")
     show_rows([reports.production_report()])
 
 
 def user_menu(current_user):
-    print("\\n--- MANAJEMEN PENGGUNA ---")
+    print("\n--- MANAJEMEN PENGGUNA ---")
     show_rows(auth.list_users())
-    print("1. Tambah akun Orang Lapangan\\n2. Aktifkan/nonaktifkan akun")
+    print("1. Tambah akun Orang Lapangan\n2. Aktifkan/nonaktifkan akun")
     choice = input("Pilih: ").strip()
     if choice == "1":
         name = input("Nama pengguna: ").strip()
@@ -219,7 +219,7 @@ def login():
 
 def admin_menu(user):
     while True:
-        print("\\n========================================")
+        print("\n========================================")
         print(" SIMPOS | MENU ADMIN/SUPERVISOR")
         print(f" Login: {user['nama_pengguna']}")
         print("========================================")
@@ -241,14 +241,14 @@ def admin_menu(user):
                 return
             else: print("Pilihan tidak tersedia.")
         except Exception as exc:
-            print(f"\\nTerjadi kesalahan: {exc}")
+            print(f"\nTerjadi kesalahan: {exc}")
         if choice != "0":
             pause()
 
 
 def field_menu(user):
     while True:
-        print("\\n========================================")
+        print("\n========================================")
         print(" SIMPOS | MENU ORANG LAPANGAN")
         print(f" Login: {user['nama_pengguna']}")
         print("========================================")
@@ -278,7 +278,7 @@ def field_menu(user):
                 return
             else: print("Pilihan tidak tersedia.")
         except Exception as exc:
-            print(f"\\nTerjadi kesalahan: {exc}")
+            print(f"\nTerjadi kesalahan: {exc}")
         if choice != "0":
             pause()
 
@@ -293,7 +293,7 @@ def main():
         if user is None:
             print("Terlalu banyak percobaan login. Aplikasi ditutup.")
             return
-        print(f"\\nSelamat datang, {user['nama_pengguna']} ({user['role']}).")
+        print(f"\nSelamat datang, {user['nama_pengguna']} ({user['role']}).")
         if user["role"] == "Admin":
             admin_menu(user)
         elif user["role"] == "Orang Lapangan":
